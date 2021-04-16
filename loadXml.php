@@ -28,6 +28,7 @@ foreach($xml->children() as $child)
     // Ostatné parsovanie :
     $names = explode ( "," ,  $child->SK );
     foreach ($names as $name){
+        $name = trim($name);
         $country_id = giveCountryId("SK",$db);
         $name_query = "SELECT * FROM names WHERE name='$name' AND country_id='$country_id' AND day_id='$day_id' ";
         $result = mysqli_query($db, $name_query);
@@ -52,6 +53,7 @@ foreach($xml->children() as $child)
     }
     $names = explode ( "," ,  $child->SKd );
     foreach ($names as $name){
+        $name = trim($name);
         $country_id = giveCountryId("SKd",$db);
         $name_query = "SELECT * FROM names WHERE name='$name' AND country_id='$country_id' AND day_id='$day_id' ";
         $result = mysqli_query($db, $name_query);
@@ -76,6 +78,7 @@ foreach($xml->children() as $child)
     }
     $names = explode ( "," ,  $child->CZ );
     foreach ($names as $name){
+        $name = trim($name);
         $country_id = giveCountryId("CZ",$db);
         $name_query = "SELECT * FROM names WHERE name='$name' AND country_id='$country_id' AND day_id='$day_id' ";
         $result = mysqli_query($db, $name_query);
@@ -100,6 +103,7 @@ foreach($xml->children() as $child)
     }
     $names = explode ( "," ,  $child->HU );
     foreach ($names as $name){
+        $name = trim($name);
         $country_id = giveCountryId("HU",$db);
         $name_query = "SELECT * FROM names WHERE name='$name' AND country_id='$country_id' AND day_id='$day_id' ";
         $result = mysqli_query($db, $name_query);
@@ -112,6 +116,7 @@ foreach($xml->children() as $child)
     }
     $names = explode ( "," ,  $child->PL );
     foreach ($names as $name){
+        $name = trim($name);
         $country_id = giveCountryId("PL",$db);
         $name_query = "SELECT * FROM names WHERE name='$name' AND country_id='$country_id' AND day_id='$day_id' ";
         $result = mysqli_query($db, $name_query);
@@ -124,6 +129,7 @@ foreach($xml->children() as $child)
     }
     $names = explode ( "," ,  $child->AT );
     foreach ($names as $name){
+        $name = trim($name);
         $country_id = giveCountryId("AT",$db);
         $name_query = "SELECT * FROM names WHERE name='$name' AND country_id='$country_id' AND day_id='$day_id' ";
         $result = mysqli_query($db, $name_query);
@@ -134,7 +140,6 @@ foreach($xml->children() as $child)
             mysqli_query($db, $name_query);
         }
     }
-
 }
 function giveCountryId($country,$db){
     $country_id = "SELECT * FROM countries WHERE country_name='$country'  LIMIT 1";
