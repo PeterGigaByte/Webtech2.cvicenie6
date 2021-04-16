@@ -1,132 +1,59 @@
-<?php
-ini_set('display_errors',1);
-ini_set('display_startup_errors',1);
-include_once "config/config.php";
-$xml=simplexml_load_file("meniny.xml");
-//print_r($xml->zaznam[1]->den);
-foreach($xml->children() as $child)
-{
-    // Parsovanie dní :
-    $day = (int)substr($child->den, -2);
-    $month = (int)substr($child->den, -4,2);
-    $day_query = "SELECT * FROM days WHERE day='$day' AND month='$month' ";
-    $result = mysqli_query($db, $day_query);
-    $row_cnt = $result->num_rows;
-    if($row_cnt == 0){
-        $day_query = "INSERT INTO days (day,month) 
-  			  VALUES('$day', '$month')";
-        mysqli_query($db, $day_query);
-    }
-    //echo $day.".".$month."<br>";
-    $day_id = "SELECT * FROM days WHERE day='$day' AND month='$month'  LIMIT 1";
-    $day_id = mysqli_query($db, $day_id);
-    $day_id = mysqli_fetch_assoc($day_id)["id"];
-    // Ostatné parsovanie :
-    $names = explode ( "," ,  $child->SK );
-    foreach ($names as $name){
-        $country_id = giveCountryId("SK",$db);
-        $name_query = "SELECT * FROM names WHERE name='$name' AND country_id='$country_id' AND day_id='$day_id' ";
-        $result = mysqli_query($db, $name_query);
-        $row_cnt = $result->num_rows;
-        if($row_cnt == 0 && $name!=""){
-            $name_query = "INSERT INTO names (day_id,country_id,name) 
-  			  VALUES('$day_id', '$country_id','$name')";
-            mysqli_query($db, $name_query);
-        }
-    }
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <title>Cvičenie 5</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <link href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.2.14/dist/jBox.all.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.2.14/dist/jBox.all.min.css" rel="stylesheet">
+    <script src="js/javascript.js"></script>
+    <link rel="stylesheet" href="css/stylesheet.css">
+    <link rel="stylesheet" href="css/table.css">
+    <link rel="icon" href="images/icon.png">
 
-    $names = explode ( "," ,  $child->SKd );
-    foreach ($names as $name){
-        $country_id = giveCountryId("SKd",$db);
-        $name_query = "SELECT * FROM names WHERE name='$name' AND country_id='$country_id' AND day_id='$day_id' ";
-        $result = mysqli_query($db, $name_query);
-        $row_cnt = $result->num_rows;
-        if($row_cnt == 0 && $name!=""){
-            $name_query = "INSERT INTO names (day_id,country_id,name) 
-  			  VALUES('$day_id', '$country_id','$name')";
-            mysqli_query($db, $name_query);
-        }
-    }
+</head>
+<body class="container">
+<header>
+    <span class="welcome-header">Dátumy, Rest api</span>
+</header>
+<div class="container border">
+    <main>
+        <div class="row">
+            <div class="input-group mb-3">
+                    <div class="input-group input-group-lg">
+                    <select class="form-select" id="inputGroupSelect02">
+                        <option selected>Vyber si čo chceš vykonať...</option>
+                        <option value="whoHasName">Chcem zistiť kto má meniny.</option>
+                        <option value="whenHasName">Chcem zistiť kedy má osoba meniny.</option>
+                        <option value="holidaysSK">Chcem získať zoznam sviatkov na Slovensku.</option>
+                        <option value="holidaysCZ">Chcem získať zoznam sviatkov v Českej republike.</option>
+                        <option value="memorableDaysSK">Chcem získať zoznam pamätných dní na Slovensku.</option>
+                        <option value="insertNewNameSKd">Chcem vložiť nové meno do kalendára.</option>
+                    </select>
+                    <label class="input-group-text" for="inputGroupSelect02">Akcia</label>
+                </div>
+            </div>
+            <div class="input-group mb-3">
+                <?php include_once "forms/holidaysCZ.php"?>
+            </div>
+            <div class="input-group mb-3">
 
-    $holidays = explode ( "," , $child->SKsviatky );
-    foreach ($holidays as $holiday){
-        $country_id = giveCountryId("SK",$db);
-        $holiday_query = "SELECT * FROM holidays WHERE name='$holiday' AND country_id='$country_id' AND day_id='$day_id' ";
-        $result = mysqli_query($db, $holiday_query);
-        $row_cnt = $result->num_rows;
-        if($row_cnt == 0 && $holiday!=""){
-            $holiday_query = "INSERT INTO holidays (day_id,country_id,name) 
-  			  VALUES('$day_id', '$country_id','$holiday')";
-            mysqli_query($db, $holiday_query);
-        }
-    }
+            </div>
+        </div>
+    </main>
 
-    $names = explode ( "," ,  $child->CZ );
-    foreach ($names as $name){
-        $country_id = giveCountryId("CZ",$db);
-        $name_query = "SELECT * FROM names WHERE name='$name' AND country_id='$country_id' AND day_id='$day_id' ";
-        $result = mysqli_query($db, $name_query);
-        $row_cnt = $result->num_rows;
-        if($row_cnt == 0 && $name!=""){
-            $name_query = "INSERT INTO names (day_id,country_id,name) 
-  			  VALUES('$day_id', '$country_id','$name')";
-            mysqli_query($db, $name_query);
-        }
-    }
-    $holidays = explode ( "," , $country = $child->CZsviatky );
-    foreach ($holidays as $holiday){
-        $country_id = giveCountryId("CZ",$db);
-        $holiday_query = "SELECT * FROM holidays WHERE name='$holiday' AND country_id='$country_id' AND day_id='$day_id' ";
-        $result = mysqli_query($db, $holiday_query);
-        $row_cnt = $result->num_rows;
-        if($row_cnt == 0 && $holiday!=""){
-            $holiday_query = "INSERT INTO holidays (day_id,country_id,name) 
-  			  VALUES('$day_id', '$country_id','$holiday')";
-            mysqli_query($db, $holiday_query);
-        }
-    }
-    $names = explode ( "," ,  $child->HU );
-    foreach ($names as $name){
-        $country_id = giveCountryId("HU",$db);
-        $name_query = "SELECT * FROM names WHERE name='$name' AND country_id='$country_id' AND day_id='$day_id' ";
-        $result = mysqli_query($db, $name_query);
-        $row_cnt = $result->num_rows;
-        if($row_cnt == 0 && $name!=""){
-            $name_query = "INSERT INTO names (day_id,country_id,name) 
-  			  VALUES('$day_id', '$country_id','$name')";
-            mysqli_query($db, $name_query);
-        }
-    }
-    $names = explode ( "," ,  $child->PL );
-    foreach ($names as $name){
-        $country_id = giveCountryId("PL",$db);
-        $name_query = "SELECT * FROM names WHERE name='$name' AND country_id='$country_id' AND day_id='$day_id' ";
-        $result = mysqli_query($db, $name_query);
-        $row_cnt = $result->num_rows;
-        if($row_cnt == 0 && $name!=""){
-            $name_query = "INSERT INTO names (day_id,country_id,name) 
-  			  VALUES('$day_id', '$country_id','$name')";
-            mysqli_query($db, $name_query);
-        }
-    }
-    $names = explode ( "," ,  $child->AT );
-    foreach ($names as $name){
-        $country_id = giveCountryId("AT",$db);
-        $name_query = "SELECT * FROM names WHERE name='$name' AND country_id='$country_id' AND day_id='$day_id' ";
-        $result = mysqli_query($db, $name_query);
-        $row_cnt = $result->num_rows;
-        if($row_cnt == 0 && $name!=""){
-            $name_query = "INSERT INTO names (day_id,country_id,name) 
-  			  VALUES('$day_id', '$country_id','$name')";
-            mysqli_query($db, $name_query);
-        }
-    }
+</div>
 
-}
-function giveCountryId($country,$db){
+<footer class="footer">
+    ©PeterRigoDevelopment
+</footer>
+<div id="loading" class="center-screen"><img class="loading-img" alt="ha"  src="images/loading.gif"></div>
+<div id="overlay" class="overlay"></div>
 
-    $country_id = "SELECT * FROM countries WHERE country_name='$country'  LIMIT 1";
-    $country_id = mysqli_query($db, $country_id);
-    $country_id = mysqli_fetch_assoc($country_id)["id"];
-    return $country_id;
-}
+</body>
+
+</html>
