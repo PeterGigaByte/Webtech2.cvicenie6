@@ -3,7 +3,15 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 include_once '../../config/Database.php';
 include_once '../../models/Name.php';
+if ($_SERVER['REQUEST_METHOD'] != 'GET') {
+    // set response code - 503 service unavailable
+    http_response_code(405);
 
+    // tell the user
+    echo json_encode(array("message" => "Method not allowed."));
+    // The request is using the POST method
+    exit();
+}
 // instantiate database and product object
 $database = new Database();
 $db = $database->getConnection();
@@ -14,6 +22,8 @@ $name = new Name($db);
 $day = isset($_GET['day']) ? $_GET['day'] : die();
 $month = isset($_GET['month']) ? $_GET['month'] : die();
 $country = isset($_GET['country']) ? $_GET['country'] : die();
+
+
 
 
     // query products

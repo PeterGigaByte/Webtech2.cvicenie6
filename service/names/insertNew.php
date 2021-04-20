@@ -13,11 +13,23 @@ include_once '../../config/Database.php';
 
 // instantiate name object
 include_once '../../models/Name.php';
+include_once '../../models/Country.php';
+include_once '../../models/Day.php';
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+    // set response code - 503 service unavailable
+    http_response_code(405);
 
+    // tell the user
+    echo json_encode(array("message" => "Method not allowed."));
+    // The request is using the POST method
+    exit();
+}
 $database = new Database();
 $db = $database->getConnection();
 
 $nameToInsert = new Name($db);
+$day = new Day($db);
+$country = new Country($db);
 
 // get posted data
 $data = json_decode(file_get_contents("php://input"));
@@ -25,14 +37,17 @@ $data = json_decode(file_get_contents("php://input"));
 
 if(
     !empty($data->name) &&
-    !empty($data->day_id) &&
-    !empty($data->country_id)
+    !empty($data->day) &&
+    !empty($data->month) &&
+    !empty($data->country)
 ){
+    $day_id = $day->getDayId($data->day,$data->month);
+    $country_id = $country->getCountryId($data->country);
 
     // set name property values
     $nameToInsert->name = $data->name;
-    $nameToInsert->day_id = $data->day_id;
-    $nameToInsert->country_id = $data->country_id;
+    $nameToInsert->day_id = $day_id;
+    $nameToInsert->country_id = $country_id;
 
     // create the name
     if($nameToInsert->create()){

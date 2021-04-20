@@ -72,8 +72,28 @@ class Name
 
         return $stmt;
     }
-    function create(){
 
+    function create(){
+        // select all query
+        $queryCheck = "SELECT
+            p.name
+        FROM
+            " . $this->table_name . " p
+                    WHERE p.name = ? AND p.country_id = ? AND p.day_id = ?";
+
+        // prepare query statement
+        $stmt2 = $this->conn->prepare($queryCheck);
+
+        // bind id of product to be updated
+        $stmt2->bindParam(1, $this->name);
+        $stmt2->bindParam(2, $this->country_id);
+        $stmt2->bindParam(3, $this->day_id);
+        // execute query
+        $stmt2->execute();
+        $num = $stmt2->rowCount();
+        if($num > 0){
+            return false;
+        }
         // query to insert record
         $query = "INSERT INTO
                 " . $this->table_name . "
@@ -92,14 +112,11 @@ class Name
         $stmt->bindParam(":name", $this->name);
         $stmt->bindParam(":day_id", $this->day_id);
         $stmt->bindParam(":country_id", $this->country_id);
-
         // execute query
         if($stmt->execute()){
             return true;
         }
-
         return false;
-
     }
 }
 ?>

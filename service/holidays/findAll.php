@@ -4,6 +4,15 @@ header("Content-Type: application/json; charset=UTF-8");
 include_once '../../config/Database.php';
 include_once '../../models/Holiday.php';
 
+if ($_SERVER['REQUEST_METHOD'] != 'GET') {
+    // set response code - 503 service unavailable
+    http_response_code(405);
+
+    // tell the user
+    echo json_encode(array("message" => "Method not allowed."));
+    // The request is using the POST method
+    exit();
+}
 // instantiate database and product object
 $database = new Database();
 $db = $database->getConnection();

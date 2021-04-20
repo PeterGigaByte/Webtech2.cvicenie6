@@ -3,7 +3,15 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 include_once '../../config/Database.php';
 include_once '../../models/Name.php';
+if ($_SERVER['REQUEST_METHOD'] != 'GET') {
+    // set response code - 503 service unavailable
+    http_response_code(405);
 
+    // tell the user
+    echo json_encode(array("message" => "Method not allowed."));
+    // The request is using the POST method
+    exit();
+}
 // instantiate database and product object
 $database = new Database();
 $db = $database->getConnection();
@@ -47,7 +55,6 @@ $country_input = isset($_GET['country']) ? $_GET['country'] : die();
         // show products data in json format
         echo json_encode($names_arr);
     } else {
-
         // set response code - 404 Not found
         http_response_code(404);
 
@@ -56,6 +63,7 @@ $country_input = isset($_GET['country']) ? $_GET['country'] : die();
             array("message" => "No names found.")
         );
 }
+
 
 // no products found will be here
 
